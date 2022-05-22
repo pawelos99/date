@@ -18,6 +18,8 @@ class TestDate(TestCase):
             "30.02.2020",
             "32.12.2021",
             "1.13.1",
+            "12.1"
+            "wrong"
         ]
         for example in examples:
             with self.assertRaises(ValueError):

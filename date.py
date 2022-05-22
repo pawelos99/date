@@ -1,7 +1,12 @@
+from typing import Union
+
+
 class Date:
     DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-    def __init__(self, day: int, month: int, year: int) -> None:
+    def __init__(
+        self, day: Union[int, str], month: Union[int, str], year: Union[int, str]
+    ) -> None:
         self.year = self._validate_year(year=year)
         self.month = self._validate_month(month)
         self.day = self._validate_day(day)
@@ -25,18 +30,21 @@ class Date:
 
     @classmethod
     def from_string(cls, text: str) -> "Date":
-        day, month, year = text.split(".")
+        try:
+            day, month, year = text.split(".")
+        except ValueError:
+            raise ValueError("String must be in DD.MM.YYYY format")
         return cls(day=day, month=month, year=year)
 
     @staticmethod
-    def _validate_year(year: int) -> int:
+    def _validate_year(year: Union[int, str]) -> int:
         try:
             return int(year)
         except ValueError:
             raise ValueError(f"Year {year} must be a int like value")
 
     @staticmethod
-    def _validate_month(month: int) -> int:
+    def _validate_month(month: Union[int, str]) -> int:
         try:
             month = int(month)
         except ValueError:
@@ -52,7 +60,7 @@ class Date:
             days_in_month += 1
         return days_in_month
 
-    def _validate_day(self, day: int) -> int:
+    def _validate_day(self, day: Union[int, str]) -> int:
         try:
             day = int(day)
         except ValueError:
@@ -84,7 +92,12 @@ class Date:
     def __repr__(self) -> str:
         return f"Date: {self.year}.{self.month}.{self.day}"
 
-    def __eq__(self, other: "Date") -> bool:
+    def __eq__(self, other: object) -> bool:
+
         return all(
-            [self.year == other.year, self.day, other.day, self.month == other.month]
+            [
+                self.year == getattr(other, "year", None),
+                self.day == getattr(other, "day", None),
+                self.month == getattr(other, "month", None),
+            ]
         )
